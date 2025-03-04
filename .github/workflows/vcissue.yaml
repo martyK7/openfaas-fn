@@ -1,0 +1,36 @@
+name: VC Issue 
+run-name: Create Verifiable Credential 
+on: [workflow_dispatch]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  CRED_DEF_ID: ${{ vars.CRED_DEF_ID }}
+  HOLDER_HOST: ${{ vars.HOLDER_HOST }}
+  ISSUER_HOST: ${{ vars.ISSUER_HOST }}
+
+jobs:
+  Build-Open-Faas-Fn:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # semantic versioning
+      - name: Get next version
+        uses: reecetech/version-increment@2023.9.3
+        id: version
+        with:
+          use_api: true
+          scheme: semver
+          increment: patch
+
+
+      # Create Verifiable Credential
+      - name: Create Verifiable Credential with Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+      - run: npm ci
+      - run: node holder-client.js ${{ env.HOLDER_HOST }} ${{ env.ISSUER_HOST }} ${{ env.CRED_DEF_ID }} ${{ env.IMAGE_NAME }} ${{ steps.version.outputs.version }} #big Q where does the VC get saved in the wallet my precious 
+
+

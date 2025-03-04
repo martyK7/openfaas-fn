@@ -1,0 +1,52 @@
+name: OpenFaasFn
+run-name: Build OpenFaas Fn
+on: [workflow_dispatch]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  CRED_DEF_ID: ${{ vars.CRED_DEF_ID }}
+  HOLDER_HOST: ${{ vars.HOLDER_HOST }}
+  ISSUER_HOST: ${{ vars.ISSUER_HOST }}
+
+jobs:
+  Build-Open-Faas-Fn:
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      # - name: openfaas-setup-cli
+      #   uses: goncalo-oliveira/openfaas-setup-cli@v1 # this is a black box as this action is not bundled with the repository; probably a wrapper for https://github.com/openfaas/faas-cli
+
+      # Docker
+      # - name: Log in to the Container registry
+      #   uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      #   with:
+      #     registry: ${{ env.REGISTRY }}
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      # semantic versioning
+      - name: Get next version
+        uses: reecetech/version-increment@2023.9.3
+        id: version
+        with:
+          use_api: true
+          scheme: semver
+          increment: patch
+      - run: git tag ${{ steps.version.outputs.version }}
+      - run: git push origin ${{ steps.version.outputs.version }}
+
+      # Build and push
+      - run: 
+          curl -sSL https://cli.openfaas.com | sh
+          FN_VERSION="${{ steps.version.outputs.version }}" faas-cli build -f echo.yml # is this a deploy to the openfaas cluster? chatgpt says no; docs say no as well
+      # - run: "docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}"
+
+
+
