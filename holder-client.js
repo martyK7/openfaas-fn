@@ -25,7 +25,7 @@ const getDigest = async () => {
 
 let config = {
     maxBodyLength: Infinity,
-    baseURL: `http://${holder_host}:7001`,
+    baseURL: `http://${holder_host}`,
     headers: {},
 };
 
@@ -38,7 +38,7 @@ const getConnectionId = async () => {
 };
 
 const getLatestSchemaId = async () => {
-    const response = await axios.get(`http://${issuer_host}:7001/schemas/created`);
+    const response = await axios.get(`http://${issuer_host}/schemas/created`);
     const schemas = response.data.schema_ids;
     schemas.sort((a,b) => parseFloat(a.split(":")[3]) - parseFloat(b.split(":")[3]));
     return schemas.pop();
