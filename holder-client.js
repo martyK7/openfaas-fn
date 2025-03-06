@@ -13,7 +13,8 @@ const project = repository.split("/")[1];
 
 const getDigest = async () => {
     const tokenResponse = await axios.get(
-        `https://ghcr.io/token?scope=repository:${repository}:pull`
+        `https://ghcr.io/token?scope=repository:${repository}:pull`,
+        { headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } } //TODO: does this fly
     );
     const token = tokenResponse.data.token;
     const response = await axios.get(
