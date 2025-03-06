@@ -41,7 +41,7 @@ jobs:
       - run: git push origin ${{ steps.version.outputs.version }}
       - uses: actions/setup-go@v5
         with:
-        go-version: '>=1.17.0'
+         go-version: '>=1.17.0'
       - run: go version
       # Build and push
       - run: |
