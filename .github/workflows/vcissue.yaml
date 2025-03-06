@@ -45,6 +45,7 @@ jobs:
       - run: go version
       # Build and push
       - run: |
+          sed -i 's|image: ghcr.io/martyk7/openfaas-fn:.*|image: ghcr.io/martyk7/openfaas-fn:${{ steps.version.outputs.version }}|' echo.yml
           curl -sSL https://cli.openfaas.com | sh && \
           faas-cli template store pull golang-middleware && \
           FN_VERSION="${{ steps.version.outputs.version }}" && \
