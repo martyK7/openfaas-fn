@@ -39,12 +39,16 @@ jobs:
           increment: patch
       - run: git tag ${{ steps.version.outputs.version }}
       - run: git push origin ${{ steps.version.outputs.version }}
-
+      - uses: actions/setup-go@v5
+        with:
+        go-version: '>=1.17.0'
+      - run: go version
       # Build and push
       - run: |
           curl -sSL https://cli.openfaas.com | sh && \
           faas-cli template store pull golang-middleware && \
           FN_VERSION="${{ steps.version.outputs.version }}" && \
+          
           faas-cli build -f echo.yml
       - run: "docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}"
 
