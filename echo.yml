@@ -6,5 +6,5 @@ functions:
   echo:
     lang: golang-middleware
     handler: ./echo
-    image: ghcr.io/jmgoyesc/open-faas-echo-fn:${FN_VERSION:latest}
+    image: ghcr.io/jmgoyesc/open-faas-echo-fn:latest
 
