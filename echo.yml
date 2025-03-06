@@ -4,7 +4,7 @@ provider:
   gateway: http://127.0.0.1:8080
 functions:
   echo:
-    lang: go
+    lang: golang-middleware
     handler: ./echo
     image: ghcr.io/jmgoyesc/open-faas-echo-fn:${FN_VERSION:latest}
 

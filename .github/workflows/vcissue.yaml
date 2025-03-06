@@ -43,7 +43,9 @@ jobs:
       # Build and push
       - run: |
           curl -sSL https://cli.openfaas.com | sh && \
-          FN_VERSION="${{ steps.version.outputs.version }}" faas-cli build -f echo.yml
+          faas-cli template store pull golang-middleware && \
+          FN_VERSION="${{ steps.version.outputs.version }}" && \
+          faas-cli build -f echo.yml
       - run: "docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}"
 
       # Create Verifiable Credential
