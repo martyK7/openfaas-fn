@@ -41,9 +41,9 @@ jobs:
       - run: git push origin ${{ steps.version.outputs.version }}
 
       # Build and push
-      - run: 
-         curl -sSL https://cli.openfaas.com | sh
-         FN_VERSION="${{ steps.version.outputs.version }}" faas-cli build -f echo.yml
+      - run: |
+          curl -sSL https://cli.openfaas.com | sh && \
+          FN_VERSION="${{ steps.version.outputs.version }}" faas-cli build -f echo.yml
       - run: "docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}"
 
       # Create Verifiable Credential
