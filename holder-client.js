@@ -12,9 +12,13 @@ const namespace = repository.split("/")[0];
 const project = repository.split("/")[1];
 
 const getDigest = async () => {
+    if (process.env.GITHUB_TOKEN){
+        console.log("there is a TOKEN")
+    }
+
     const tokenResponse = await axios.get(
         `https://ghcr.io/token?scope=repository:${repository}:pull`,
-        { headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } } //TODO: does this fly
+        { headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, Accept: "application/json" } } //TODO: does this fly; no try docker auth
     );
     const token = tokenResponse.data.token;
     const response = await axios.get(
