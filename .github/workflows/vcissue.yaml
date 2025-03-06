@@ -10,11 +10,25 @@ env:
   ISSUER_HOST: ${{ vars.ISSUER_HOST }}
 
 jobs:
-  Build-Open-Faas-Fn:
+  Build-Open-Faas-Fn-And-Create-VC:
+    name: Build Open Faas Function and Create Verifiable Credential
     permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      # Docker
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
       # semantic versioning
       - name: Get next version
         uses: reecetech/version-increment@2023.9.3
@@ -23,7 +37,14 @@ jobs:
           use_api: true
           scheme: semver
           increment: patch
+      - run: git tag ${{ steps.version.outputs.version }}
+      - run: git push origin ${{ steps.version.outputs.version }}
 
+      # Build and push
+      - run: 
+         curl -sSL https://cli.openfaas.com | sh
+         FN_VERSION="${{ steps.version.outputs.version }}" faas-cli build -f echo.yml
+      - run: "docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}"
 
       # Create Verifiable Credential
       - name: Create Verifiable Credential with Node.js
@@ -31,6 +52,6 @@ jobs:
         with:
           node-version: '20.x'
       - run: npm ci
-      - run: node holder-client.js ${{ env.HOLDER_HOST }} ${{ env.ISSUER_HOST }} ${{ env.CRED_DEF_ID }} ${{ env.IMAGE_NAME }} ${{ steps.version.outputs.version }} #big Q where does the VC get saved in the wallet my precious 
+      - run: node holder-client.js ${{ env.HOLDER_HOST }} ${{ env.ISSUER_HOST }} ${{ env.CRED_DEF_ID }} ${{ env.IMAGE_NAME }} ${{ steps.version.outputs.version }}
 
 
