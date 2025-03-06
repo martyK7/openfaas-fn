@@ -50,7 +50,9 @@ jobs:
           FN_VERSION="${{ steps.version.outputs.version }}" && \
           
           faas-cli build -f echo.yml
-      - run: "docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version }}"
+      - run: |
+          IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]') && \
+          docker push ${{ env.REGISTRY }}/${IMAGE_NAME_LOWER}:${{ steps.version.outputs.version }}
 
       # Create Verifiable Credential
       - name: Create Verifiable Credential with Node.js
