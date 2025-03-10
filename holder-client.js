@@ -1,4 +1,5 @@
 const axios = require("axios");
+const Buffer = require('buffer').Buffer;
 
 // how to invoke: node holder-client.js [holder_host] [issuer_host] [cred_def_id] [repository] [tag]
 
@@ -17,9 +18,10 @@ const getDigest = async () => {
         console.log("there is a TOKEN")
     } else
         console.log("there is no TOKEN")
+    const auth = Buffer.from(`martyk7:${gh_secret}`).toString('base64');
     const tokenResponse = await axios.get(
         `https://ghcr.io/token?scope=repository:${repository}:pull`,
-        { headers: { Authorization: `Basic martyk7:${gh_secret}`, Accept: "application/json" } } //TODO: does this fly; no try docker auth
+        { headers: { Authorization: `Basic ${auth}`, Accept: "application/json" } }
     );
     const token = tokenResponse.data.token;
     const response = await axios.get(
