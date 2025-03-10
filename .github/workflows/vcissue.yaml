@@ -56,7 +56,7 @@ jobs:
           curl -sSL https://cli.openfaas.com | sh && \
           faas-cli template store pull golang-middleware && \
           FN_VERSION="${{ steps.version.outputs.version }}" && \  
-          faas-cli build -f echo.yml --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from type=local,src=/tmp/.buildx-cache --cache-to type=local,dest=/tmp/.buildx-cache
+          faas-cli build -f echo.yml 
       - name: image push
         run: |
           IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]') && \
