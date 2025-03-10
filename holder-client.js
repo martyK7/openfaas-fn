@@ -5,17 +5,18 @@ const axios = require("axios");
 const holder_host = process.argv[2];
 const issuer_host = process.argv[3];
 const cred_def_id = process.argv[4];
-const repository = process.argv[5];
+const repository = process.argv[5].tolowerCase();
 const tag = process.argv[6];
 
 const namespace = repository.split("/")[0];
 const project = repository.split("/")[1];
 
 const getDigest = async () => {
-    if (process.env.GITHUB_TOKEN){
+    if (process.env.GITHUB_TOKEN) {
         console.log("there is a TOKEN")
-    }
-
+    } else
+        console.log("there is no TOKEN")
+    
     const tokenResponse = await axios.get(
         `https://ghcr.io/token?scope=repository:${repository}:pull`,
         { headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, Accept: "application/json" } } //TODO: does this fly; no try docker auth
@@ -45,7 +46,7 @@ const getConnectionId = async () => {
 const getLatestSchemaId = async () => {
     const response = await axios.get(`http://${issuer_host}/schemas/created`);
     const schemas = response.data.schema_ids;
-    schemas.sort((a,b) => parseFloat(a.split(":")[3]) - parseFloat(b.split(":")[3]));
+    schemas.sort((a, b) => parseFloat(a.split(":")[3]) - parseFloat(b.split(":")[3]));
     return schemas.pop();
 };
 
