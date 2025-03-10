@@ -19,7 +19,7 @@ const getDigest = async () => {
         console.log("there is no TOKEN")
     const tokenResponse = await axios.get(
         `https://ghcr.io/token?scope=repository:${repository}:pull`,
-        { headers: { Authorization: `Bearer ${gh_secret}`, Accept: "application/json" } } //TODO: does this fly; no try docker auth
+        { headers: { Authorization: `Basic martyk7:${gh_secret}`, Accept: "application/json" } } //TODO: does this fly; no try docker auth
     );
     const token = tokenResponse.data.token;
     const response = await axios.get(

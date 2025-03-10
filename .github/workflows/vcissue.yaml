@@ -62,7 +62,7 @@ jobs:
           docker push ${{ env.REGISTRY }}/${IMAGE_NAME_LOWER}:${{ steps.version.outputs.version }}
 
       # Create Verifiable Credential
-      - name: Create Verifiable Credential with Node.js
+      - name: set up nodejs to create Verifiable Credential 
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
