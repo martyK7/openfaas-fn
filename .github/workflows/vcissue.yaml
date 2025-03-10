@@ -34,7 +34,6 @@ jobs:
         uses: reecetech/version-increment@2023.9.3
         id: version
         with:
-          use_api: true
           scheme: semver
           increment: patch
       - run: git tag ${{ steps.version.outputs.version }}
@@ -55,7 +54,7 @@ jobs:
           sed -i 's|image: ghcr.io/martyk7/openfaas-fn:.*|image: ghcr.io/martyk7/openfaas-fn:${{ steps.version.outputs.version }}|' echo.yml
           curl -sSL https://cli.openfaas.com | sh && \
           faas-cli template store pull golang-middleware && \
-          FN_VERSION="${{ steps.version.outputs.version }}" && \  
+          FN_VERSION="${{ steps.version.outputs.version }}" && \
           faas-cli build -f echo.yml 
       - name: image push
         run: |
