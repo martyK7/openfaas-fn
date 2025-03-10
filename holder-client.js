@@ -5,7 +5,7 @@ const axios = require("axios");
 const holder_host = process.argv[2];
 const issuer_host = process.argv[3];
 const cred_def_id = process.argv[4];
-const repository = process.argv[5].tolowerCase();
+const repository = process.argv[5].toLowerCase();
 const tag = process.argv[6];
 
 const namespace = repository.split("/")[0];
