@@ -66,7 +66,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
-      - run: npm ci
-      - run: node holder-client.js ${{ env.HOLDER_HOST }} ${{ env.ISSUER_HOST }} ${{ env.CRED_DEF_ID }} ${{ env.IMAGE_NAME }} ${{ steps.version.outputs.version }}
+      - name: install client and go
+        run: |
+          npm ci
+          node holder-client.js ${{ env.HOLDER_HOST }} ${{ env.ISSUER_HOST }} ${{ env.CRED_DEF_ID }} ${{ env.IMAGE_NAME }} ${{ steps.version.outputs.version }} ${{ secrets.GITHUB_TOKEN }}
 
 
