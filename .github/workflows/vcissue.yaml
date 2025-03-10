@@ -44,14 +44,21 @@ jobs:
          go-version: '>=1.17.0'
       - run: go version
       # Build and push
-      - run: |
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-buildx-
+      - name: faas cli build
+        run: |
           sed -i 's|image: ghcr.io/martyk7/openfaas-fn:.*|image: ghcr.io/martyk7/openfaas-fn:${{ steps.version.outputs.version }}|' echo.yml
           curl -sSL https://cli.openfaas.com | sh && \
           faas-cli template store pull golang-middleware && \
-          FN_VERSION="${{ steps.version.outputs.version }}" && \
-          
-          faas-cli build -f echo.yml
-      - run: |
+          FN_VERSION="${{ steps.version.outputs.version }}" && \  
+          faas-cli build -f echo.yml --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from type=local,src=/tmp/.buildx-cache --cache-to type=local,dest=/tmp/.buildx-cache
+      - name: image push
+        run: |
           IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]') && \
           docker push ${{ env.REGISTRY }}/${IMAGE_NAME_LOWER}:${{ steps.version.outputs.version }}
 
