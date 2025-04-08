@@ -36,6 +36,9 @@ jobs:
         with:
           scheme: semver
           increment: patch
+      - name: increase version in echo.yml
+        run:  |
+         sed -i 's|image: ghcr.io/martyk7/openfaas-fn:.*|image: ghcr.io/martyk7/openfaas-fn:${{ steps.version.outputs.version }}|' echo.yml
       - run: git tag ${{ steps.version.outputs.version }}
       - run: git push origin ${{ steps.version.outputs.version }}
       - uses: actions/setup-go@v5
@@ -51,7 +54,6 @@ jobs:
           restore-keys: ${{ runner.os }}-buildx-
       - name: faas cli build
         run: |
-          sed -i 's|image: ghcr.io/martyk7/openfaas-fn:.*|image: ghcr.io/martyk7/openfaas-fn:${{ steps.version.outputs.version }}|' echo.yml
           curl -sSL https://cli.openfaas.com | sh && \
           faas-cli template store pull golang-middleware && \
           FN_VERSION="${{ steps.version.outputs.version }}" && \

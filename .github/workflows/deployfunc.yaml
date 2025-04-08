@@ -1,0 +1,41 @@
+name: Deploy function
+run-name: Deploy function to openfaas
+on: [workflow_dispatch]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  HOLDER_HOST: ${{ vars.HOLDER_HOST }}
+  VERIFIER_HOST: ${{ vars.VERIFIER_HOST }}
+  
+jobs:
+  Deploy-Open-Faas-Fn:
+    name: Deploy Open Faas Function
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: pull image
+        run: docker pull ghcr.io/martyk7/openfaas-fn:latest 
+      - name: faas-cli deploy # prerequisite is a VC issue for the current version
+        run: |
+          curl -sSL https://cli.openfaas.com | sh && \
+          set +o history && \
+          echo "${{ secrets.OPENFAAS_PASSWORD }}" | faas-cli login -g ${{ vars.OPENFAAS-GATEWAY }} -u admin --password-stdin && \
+          faas-cli deploy -f echo.yml
+  Holder-shenanigans:
+    name: Holder shenanigans
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: run holder client
+        run: |
+         pip install -r requirements.txt && \
+         python holder_client.py --holder-host ${{ env.HOLDER_HOST }} 
