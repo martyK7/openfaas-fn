@@ -76,6 +76,6 @@ def main(holder_host):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--holder-host", type=str, help="Holder URL")
-
+    print( "im here")
     args = parser.parse_args()
     main(args.holder_host)
