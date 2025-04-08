@@ -59,7 +59,7 @@ def send_credential(
 
 def main(holder_host):
     seconds_to_wait = 30
-    print(os.getenv("HOLDER_HOST"))
+    print(f'{os.getenv("HOLDER_HOST")} : holder host')
     holder_host = os.getenv("HOLDER_HOST") or holder_host
     while check_for_exchange(holder_host) is False and seconds_to_wait > 0:
         print(
