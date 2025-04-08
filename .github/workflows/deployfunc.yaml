@@ -28,6 +28,7 @@ jobs:
           curl -sSL https://cli.openfaas.com | sh && \
           set +o history && \
           echo "${{ secrets.OPENFAAS_PASSWORD }}" | faas-cli login -g ${{ vars.OPENFAAS_GATEWAY }} -u admin --password-stdin && \
+          faas-cli template store pull golang-middleware  && \
           faas-cli deploy -f echo.yml
   Holder-shenanigans:
     name: Holder shenanigans
@@ -42,4 +43,5 @@ jobs:
       - name: run holder client
         run: |
          pip install -r requirements.txt && \
+         echo "HOLDER_HOST: ${{ env.HOLDER_HOST }}" && \
          python holder-client.py --holder-host ${{ env.HOLDER_HOST }} 
