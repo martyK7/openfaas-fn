@@ -8,7 +8,7 @@ HOLDER_HOST_PORT = 8001
 
 
 def check_for_exchange(holder_host: str) -> None:
-    url = f"http://{holder_host}:{HOLDER_HOST_PORT}/present-proof/records"
+    url = f"http://{holder_host}/present-proof/records"
     response = requests.get(url, timeout=5)
     data = response.json()
     if data["results"] != []:
@@ -17,7 +17,7 @@ def check_for_exchange(holder_host: str) -> None:
 
 
 def get_proof_and_credential(holder_host: str) -> None:
-    url = f"http://{holder_host}:{HOLDER_HOST_PORT}/present-proof/records"
+    url = f"http://{holder_host}/present-proof/records"
     response = requests.get(url,timeout=5)
     if response.status_code == 200:
         print(response.json())
@@ -30,7 +30,7 @@ def get_proof_and_credential(holder_host: str) -> None:
     referent = data[0]["results"]["presentation"]["requested_proof"]["revealed_attrs"][
         "tag"
     ]["sub_proof_index"]
-    url = f"http://{holder_host}:{HOLDER_HOST_PORT}/credentials"
+    url = f"http://{holder_host}/credentials"
     requests.get(url, timeout=5)
     return (holder_presentation_id, referent)
 
@@ -38,7 +38,7 @@ def get_proof_and_credential(holder_host: str) -> None:
 def send_credential(
     holder_host: str, holder_presentation_id: str, referent: str
 ) -> None:
-    url = f"http://{holder_host}:{HOLDER_HOST_PORT}/present-proof/records/{holder_presentation_id}/send-presentation"
+    url = f"http://{holder_host}/present-proof/records/{holder_presentation_id}/send-presentation"
     payload = {
         "self_attested_attributes": {},
         "requested_attributes": {
