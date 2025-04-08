@@ -21,8 +21,17 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get the latest tag
+        id: get_latest_tag
+        run: |
+            git fetch --tags
+            LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+            echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
       - name: pull image
         run: docker pull ghcr.io/martyk7/openfaas-fn:0.0.26
+      - name: increase version in echo.yml
+        run:  |
+         sed -i 's|image: ghcr.io/martyk7/openfaas-fn:.*|image: ghcr.io/martyk7/openfaas-fn:$LATEST_TAG |' echo.yml 
       - name: faas-cli deploy # prerequisite is a VC issue for the current version
         run: |
           curl -sSL https://cli.openfaas.com | sh && \
