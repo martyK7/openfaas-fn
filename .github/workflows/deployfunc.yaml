@@ -27,7 +27,7 @@ jobs:
         run: |
           curl -sSL https://cli.openfaas.com | sh && \
           set +o history && \
-          echo "${{ secrets.OPENFAAS_PASSWORD }}" | faas-cli login -g ${{ vars.OPENFAAS-GATEWAY }} -u admin --password-stdin && \
+          echo "${{ secrets.OPENFAAS_PASSWORD }}" | faas-cli login -g ${{ vars.OPENFAAS_GATEWAY }}:8080 -u admin --password-stdin && \
           faas-cli deploy -f echo.yml
   Holder-shenanigans:
     name: Holder shenanigans
@@ -35,6 +35,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+         python-version: '3.10'
       - name: run holder client
         run: |
          pip install -r requirements.txt && \
