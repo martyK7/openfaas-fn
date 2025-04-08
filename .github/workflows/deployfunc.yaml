@@ -6,7 +6,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   HOLDER_HOST: ${{ vars.HOLDER_HOST }}
-  VERIFIER_HOST: ${{ vars.VERIFIER_HOST }}
+  
   
 jobs:
   Deploy-Open-Faas-Fn:
@@ -22,7 +22,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: pull image
-        run: docker pull ghcr.io/martyk7/openfaas-fn:latest 
+        run: docker pull ghcr.io/martyk7/openfaas-fn:0.0.26
       - name: faas-cli deploy # prerequisite is a VC issue for the current version
         run: |
           curl -sSL https://cli.openfaas.com | sh && \
@@ -42,4 +42,4 @@ jobs:
       - name: run holder client
         run: |
          pip install -r requirements.txt && \
-         python holder_client.py --holder-host ${{ env.HOLDER_HOST }} 
+         python holder-client.py --holder-host ${{ env.HOLDER_HOST }} 
