@@ -181,7 +181,7 @@ const sendPresentationProposal = async (cred_def_id, proposal, verifier_conn_id)
         auto_remove: true,
         auto_present: true, // this is the gamechanging setting
         comment: "Proposal for a proof presentation",
-        connection_id:verifier_conn_id,
+        connection_id: verifier_conn_id,
         presentation_proposal: {
             "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/presentation-preview",
             attributes: [
