@@ -41,8 +41,9 @@ const issuer_did = "6i7GFi2cDx524ZNfxmGWcp";
 
 const getConnectionId = async () => {
     const response = await axios.get("/connections", config);
-    return response.data.results.find((it) => it.their_label === "Issuer")
-        .connection_id;
+    return { "issuer_conn_id": response.data.results.find((it) => it.their_label === "Issuer")
+        .connection_id, "verifier_conn_id": response.data.results.find((it) => it.their_label === "Verifier")
+        .connection_id };
 };
 
 const getLatestSchemaId = async () => {
@@ -174,13 +175,13 @@ const storeCredential = async (credential_exchange_id, tag) => {
     );
 }; // the credential is stored in the wallet in the holder agent which is not running in the github context but somewhere else #HOST_IP demo wise this explains the AWS stuff 
 
-const sendPresentationProposal = async (cred_def_id, proposal) => {
+const sendPresentationProposal = async (cred_def_id, proposal, verifier_conn_id) => {
     const referent = proposal.namespace + "/" + proposal.repository + "_" + proposal.tag;
     const data = {
         auto_remove: true,
         auto_present: true, // this is the gamechanging setting
         comment: "Proposal for a proof presentation",
-        connection_id: proposal.connection_id,
+        connection_id:verifier_conn_id,
         presentation_proposal: {
             "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/presentation-preview",
             attributes: [
@@ -228,7 +229,7 @@ const sendPresentationProposal = async (cred_def_id, proposal) => {
 } 
 
 const main = async () => {
-    const connection_id = await getConnectionId();
+    const {issuer_connection_id, verifier_conn_id} = await getConnectionId();
     const schemaId = await getLatestSchemaId();
     const digest = await getDigest();
     const proposal = {
@@ -244,7 +245,7 @@ const main = async () => {
     let { credential_exchange_id } = await sendProposal(proposal);
     console.log("initial credential exchange id: " + credential_exchange_id);
     credential_exchange_id = await waitForOfferReceived(
-        connection_id,
+        issuer_connection_id,
         credential_exchange_id
     );
 
@@ -258,12 +259,14 @@ const main = async () => {
     );
 
     credential_exchange_id = await waitForCredentialReceived(
-        connection_id,
+        issuer_connection_id,
         credential_exchange_id
     );
 
     await storeCredential(credential_exchange_id, tag);
-    await sendPresentationProposal( cred_def_id, proposal); // make this release ready to release VC presentation wise with auto_present
+    console.log('credential saved in the wallet');
+    await sendPresentationProposal( cred_def_id, proposal, verifier_conn_id); // make this release ready to release VC presentation wise with auto_present
+    console.log("presentation proposal sent to connection to verifier with id: " + verifier_conn_id);
 };
 
 main()
