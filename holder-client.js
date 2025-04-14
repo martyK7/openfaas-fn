@@ -233,7 +233,7 @@ const main = async () => {
     const schemaId = await getLatestSchemaId();
     const digest = await getDigest();
     const proposal = {
-        connection_id,
+        issuer_connection_id,
         cred_def_id: cred_def_id,
         issuer_did: issuer_did,
         issuer_schema_id: schemaId,
