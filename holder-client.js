@@ -179,10 +179,9 @@ const sendPresentationProposal = async (cred_def_id, proposal) => {
     const data = {
         auto_remove: true,
         auto_present: true, // this is the gamechanging setting
-        comment:
-            "Proposal for a proof presentation",
+        comment: "Proposal for a proof presentation",
         connection_id: proposal.connection_id,
-        credential_proposal: {
+        presentation_proposal: {
             "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/present-proof/1.0/presentation-preview",
             attributes: [
                 {
