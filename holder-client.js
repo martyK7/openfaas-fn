@@ -176,7 +176,7 @@ const storeCredential = async (credential_exchange_id, tag) => {
 }; // the credential is stored in the wallet in the holder agent which is not running in the github context but somewhere else #HOST_IP demo wise this explains the AWS stuff 
 
 const sendPresentationProposal = async (cred_def_id, proposal, verifier_connection_id) => {
-    // const referent = proposal.namespace + "/" + proposal.repository + "_" + proposal.tag;
+    const referent = proposal.namespace + "/" + proposal.repository + "_" + proposal.tag;
     const data = {
         auto_remove: true,
         auto_present: true, // this is the gamechanging setting
@@ -187,32 +187,33 @@ const sendPresentationProposal = async (cred_def_id, proposal, verifier_connecti
             attributes: [
                 {
                     "mime-type": "application/json",
+                    name: "digest",
+                    referent: referent,
+                    value: proposal.digest,
+                    cred_def_id: cred_def_id,
+                },
+                {
+                    "mime-type": "application/json",
                     name: "namespace",
-                    // referent: referent,
+                    referent: referent,
                     value: proposal.namespace,
                     cred_def_id: cred_def_id,
                 },
                 {
                     "mime-type": "application/json",
                     name: "repository",
-                    // referent: referent,
+                    referent: referent,
                     value: proposal.repository,
                     cred_def_id: cred_def_id,
                 },
                 {
                     "mime-type": "application/json",
                     name: "tag",
-                    // referent: referent,
+                    referent: referent,
                     value: proposal.tag,
                     cred_def_id: cred_def_id,
                 },
-                {
-                    "mime-type": "application/json",
-                    name: "digest",
-                    // referent: referent,
-                    value: proposal.digest,
-                    cred_def_id: cred_def_id,
-                },
+               
             ],
             predicates: [],
         },
