@@ -8,20 +8,25 @@ const issuer_host = process.argv[3];
 const cred_def_id = process.argv[4];
 const repository = process.argv[5].toLowerCase();
 const tag = process.argv[6];
-const gh_secret = process.argv[7];
+// const gh_secret = process.argv[7];
 
 const namespace = repository.split("/")[0];
 const project = repository.split("/")[1];
 
 const getDigest = async () => {
-    if (gh_secret) {
-        console.log("there is a TOKEN")
-    } else
-        console.log("there is no TOKEN")
-    const auth = Buffer.from(`martyk7:${gh_secret}`).toString('base64');
+    // if repo is private, we need to authenticate
+    // if (gh_secret) {
+    //     console.log("there is a TOKEN")
+    // } else
+    //     console.log("there is no TOKEN")
+    // const auth = Buffer.from(`martyk7:${gh_secret}`).toString('base64');
+    // const tokenResponse = await axios.get(
+    //     `https://ghcr.io/token?scope=repository:${repository}:pull`,
+    //     { headers: { Authorization: `Basic ${auth}`, Accept: "application/json" } }
+    // );
     const tokenResponse = await axios.get(
         `https://ghcr.io/token?scope=repository:${repository}:pull`,
-        { headers: { Authorization: `Basic ${auth}`, Accept: "application/json" } }
+        { headers: {  Accept: "application/json" } }
     );
     const token = tokenResponse.data.token;
     const response = await axios.get(
