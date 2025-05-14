@@ -1,13 +1,26 @@
 name: VC Issue 
 run-name: Create Verifiable Credential 
-on: [workflow_dispatch]
+on: 
+  workflow_dispatch:
+    inputs:
+      CRED_DEF_ID:
+        description: 'Credential Definition ID'
+        required: false
+      HOLDER_HOST:
+        description: 'Holder Host'
+        required: false
+      ISSUER_HOST:
+        description: 'Issuer Host'
+        required: false
+
+
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  CRED_DEF_ID: ${{ vars.CRED_DEF_ID }}
-  HOLDER_HOST: ${{ vars.HOLDER_HOST }}
-  ISSUER_HOST: ${{ vars.ISSUER_HOST }}
+  CRED_DEF_ID: ${{ inputs.CRED_DEF_ID || vars.CRED_DEF_ID }}
+  HOLDER_HOST: ${{ inputs.HOLDER_HOST || vars.HOLDER_HOST }}
+  ISSUER_HOST: ${{ inputs.ISSUER_HOST || vars.ISSUER_HOST }}
 
 jobs:
   Build-Open-Faas-Fn-And-Create-VC:
