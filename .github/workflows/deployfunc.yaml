@@ -32,6 +32,15 @@ jobs:
       - name: increase version in echo.yml
         run:  |
          sed -i 's|image: ghcr.io/martyk7/openfaas-fn:.*|image: ghcr.io/martyk7/openfaas-fn:$LATEST_TAG |' echo.yml 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+         python-version: '3.10'
+      - name: run verifier client
+        run: |
+         pip install -r requirements.txt && \
+         echo "HOLDER_HOST: ${{ env.HOLDER_HOST }}" && \
+         python holder-client.py --holder-host ${{ env.HOLDER_HOST }} 
       - name: faas-cli deploy # prerequisite is a VC issue for the current version
         run: |
           curl -sSL https://cli.openfaas.com | sh && \
@@ -45,12 +54,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-         python-version: '3.10'
-      - name: run holder client
-        run: |
-         pip install -r requirements.txt && \
-         echo "HOLDER_HOST: ${{ env.HOLDER_HOST }}" && \
-         python holder-client.py --holder-host ${{ env.HOLDER_HOST }} 
+      

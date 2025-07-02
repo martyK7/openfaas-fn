@@ -4,7 +4,7 @@ const Buffer = require('buffer').Buffer;
 // how to invoke: node holder-client.js [holder_host] [issuer_host] [cred_def_id] [repository] [tag]
 
 const holder_host = process.argv[2];
-const issuer_host = process.argv[3];
+const openfaas_host = process.argv[3];
 const cred_def_id = process.argv[4];
 const repository = process.argv[5].toLowerCase();
 const tag = process.argv[6];
@@ -46,13 +46,13 @@ const issuer_did = "6i7GFi2cDx524ZNfxmGWcp";
 
 const getConnectionId = async () => {
     const response = await axios.get("/connections", config);
-    return { "issuer_connection_id": response.data.results.find((it) => it.their_label === "Issuer")
-        .connection_id, "verifier_connection_id": response.data.results.find((it) => it.their_label === "Verifier")
-        .connection_id };
+    return { "issuer_connection_id": response.data.results.find((it) => it.their_label === "Issuer").connection_id,
+         "verifier_connection_id": response.data.results.find((it) => it.their_label === "OpenFaaS").connection_id, 
+         "cloudprovider_connection_id": response.data.results.find((it) => it.their_label === "Cloudprovider").connection_id };
 };
 
 const getLatestSchemaId = async () => {
-    const response = await axios.get(`http://${issuer_host}/schemas/created`);
+    const response = await axios.get(`http://${openfaas_host}/schemas/created`);
     const schemas = response.data.schema_ids;
     schemas.filter(a => !a.includes("cloud")).sort((a, b) => parseFloat(a.split(":")[3]) - parseFloat(b.split(":")[3]));
     return schemas.pop();
@@ -235,7 +235,7 @@ const sendPresentationProposal = async (cred_def_id, proposal, verifier_connecti
 } 
 
 const main = async () => {
-    const {issuer_connection_id, verifier_connection_id} = await getConnectionId();
+    const {issuer_connection_id, verifier_connection_id: openfaas_connection_id, cloudprovider_connection_id} = await getConnectionId();
     const schemaId = await getLatestSchemaId();
     const digest = await getDigest();
     const proposal = {
@@ -271,8 +271,12 @@ const main = async () => {
 
     await storeCredential(credential_exchange_id, tag);
     console.log('credential saved in the wallet');
-    await sendPresentationProposal( cred_def_id, proposal, verifier_connection_id); // make this release ready to release VC presentation wise with auto_present
-    console.log("presentation proposal sent to connection to verifier with id: " + verifier_connection_id);
+    await sendPresentationProposal( cred_def_id, proposal, openfaas_connection_id); 
+    console.log("presentation proposal sent to connection to openfaas verifier with id: " + openfaas_connection_id);
+    // sent presentation proposal also to cloud agent 
+    await sendPresentationProposal( cred_def_id, proposal, cloudprovider_connection_id); 
+    console.log("presentation proposal sent to connection to cloudprovider verifier with id: " + cloudprovider_connection_id);
+
 };
 
 main()

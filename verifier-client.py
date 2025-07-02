@@ -61,16 +61,8 @@ def main(holder_host):
     seconds_to_wait = 30
     print(f'{os.getenv("HOLDER_HOST")} : holder host')
     holder_host = os.getenv("HOLDER_HOST") or holder_host
-    while check_for_exchange(holder_host) is False and seconds_to_wait > 0:
-        print(
-            f"Waiting for exchange to come in. Will check again in {seconds_to_wait} seconds."
-        )
-        time.sleep(seconds_to_wait)
-        if seconds_to_wait > 1:
-            seconds_to_wait -= 1
-
-    holder_presentation, referent = get_proof_and_credential(holder_host)
-    send_credential(holder_host, holder_presentation, referent)
+    # verify cloud VC
+    # verify openfaas  OR make this in go to avoid rewriting in one more language... 
 
 
 if __name__ == "__main__":
