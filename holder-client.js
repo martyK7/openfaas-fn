@@ -235,6 +235,7 @@ const sendPresentationProposal = async (cred_def_id, proposal, verifier_connecti
 } 
 
 const main = async () => {
+    console.time("Holder Client Execution Time");
     const {issuer_connection_id, verifier_connection_id} = await getConnectionId();
     const schemaId = await getLatestSchemaId();
     const digest = await getDigest();
@@ -271,8 +272,9 @@ const main = async () => {
 
     await storeCredential(credential_exchange_id, tag);
     console.log('credential saved in the wallet');
-    await sendPresentationProposal( cred_def_id, proposal, verifier_connection_id); // make this release ready to release VC presentation wise with auto_present
+    await sendPresentationProposal( cred_def_id, proposal, verifier_connection_id); 
     console.log("presentation proposal sent to connection to verifier with id: " + verifier_connection_id);
+    console.timeEnd("Holder Client Execution Time");
 };
 
 main()
