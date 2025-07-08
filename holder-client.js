@@ -235,10 +235,15 @@ const sendPresentationProposal = async (cred_def_id, proposal, verifier_connecti
 } 
 
 const main = async () => {
-    console.time("Holder Client Execution Time");
+    console.time("Holder Client connection Time");
     const {issuer_connection_id, verifier_connection_id} = await getConnectionId();
+    console.timeEnd("Holder Client connection Time");
+    console.time("Holder Client get schema Time");
     const schemaId = await getLatestSchemaId();
+    console.timeEnd("Holder Client get schema Time");
+    console.time("Holder Client getDigest Time");
     const digest = await getDigest();
+    console.timeEnd("Holder Client getDigest Time");
     const proposal = {
         connection_id: issuer_connection_id,
         cred_def_id: cred_def_id,
@@ -249,7 +254,9 @@ const main = async () => {
         tag: tag,
         digest: digest,
     };
+    console.time("Holder Client sendProposal Time");
     let { credential_exchange_id } = await sendProposal(proposal);
+    console.timeEnd("Holder Client sendProposal Time");
     console.log("initial credential exchange id: " + credential_exchange_id);
     credential_exchange_id = await waitForOfferReceived(
         issuer_connection_id,
@@ -260,7 +267,9 @@ const main = async () => {
         "credential exchange id once offer recieved: " + credential_exchange_id
     );
 
+    console.time("Holder Client confirmOffer Time");
     await confirmOffer(credential_exchange_id);
+    console.time("Holder Client confirmOffer Time");
     console.log(
         "credential exchange id:  once offer confirmed" + credential_exchange_id
     );
@@ -270,11 +279,14 @@ const main = async () => {
         credential_exchange_id
     );
 
+    console.time("Holder Client storeCred Time");
     await storeCredential(credential_exchange_id, tag);
+    console.timeEnd("Holder Client storeCred Time");
     console.log('credential saved in the wallet');
+    console.time("Holder Client sendProposal Time");
     await sendPresentationProposal( cred_def_id, proposal, verifier_connection_id); 
+    console.timeEnd("Holder Client sendProposal Time");
     console.log("presentation proposal sent to connection to verifier with id: " + verifier_connection_id);
-    console.timeEnd("Holder Client Execution Time");
 };
 
 main()
