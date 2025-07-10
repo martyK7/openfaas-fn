@@ -269,7 +269,7 @@ const main = async () => {
 
     console.time("Holder Client confirmOffer Time");
     await confirmOffer(credential_exchange_id);
-    console.time("Holder Client confirmOffer Time");
+    console.timeEnd("Holder Client confirmOffer Time");
     console.log(
         "credential exchange id:  once offer confirmed" + credential_exchange_id
     );
